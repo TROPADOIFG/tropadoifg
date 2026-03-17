@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HACKER LERDÃO - Anon System</title>
+    <style>
+        :root {
+            --primary: #00d2ff; /* Azul Ciano Neon */
+            --bg: #050505;     /* Fundo quase breu */
+            --card: #111111;   /* Cartão escuro */
+            --text: #ffffff;
+            --shadow: rgba(0, 210, 255, 0.5);
+        }
+
+        body { 
+            font-family: 'Courier New', Courier, monospace; 
+            background-color: var(--bg); 
+            color: var(--text); 
+            margin: 0; 
+            padding: 20px; 
+            overflow-x: hidden;
+        }
+
+        /* Título Principal */
+        .main-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .main-header h1 {
+            font-size: 3.5rem;
+            color: var(--primary);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 0 0 20px var(--shadow), 0 0 40px var(--shadow);
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { opacity: 0.8; transform: scale(1); }
+            to { opacity: 1; transform: scale(1.02); }
+        }
+
+        /* Números 67 Flutuantes */
+        .bg-numbers {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .num67 {
+            position: absolute;
+            color: rgba(0, 210, 255, 0.1);
+            font-size: 18px;
+            animation: fall 12s linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+
+        .container { max-width: 750px; margin: 0 auto; position: relative; }
+
+        /* Estilo das Boxes */
+        .box { 
+            background: var(--card); 
+            padding: 25px; 
+            border: 1px solid var(--primary); 
+            border-radius: 4px;
+            box-shadow: inset 0 0 15px rgba(0, 210, 255, 0.1);
+            margin-bottom: 30px; 
+        }
+
+        input, textarea { 
+            width: 100%; padding: 12px; margin: 10px 0; 
+            background: #000; border: 1px solid #333; 
+            color: var(--primary); border-radius: 0;
+            font-family: inherit; box-sizing: border-box;
+        }
+        
+        input:focus, textarea:focus { border-color: var(--primary); outline: none; }
+
+        .btn-main { 
+            background: var(--primary); color: #000; border: none; padding: 15px; 
+            cursor: pointer; font-weight: bold; width: 100%; font-size: 1.1rem;
+            transition: 0.3s; text-transform: uppercase;
+        }
+        .btn-main:hover { background: #fff; box-shadow: 0 0 25px var(--primary); }
+
+        /* Tópicos */
+        .topic { 
+            background: var(--card); padding: 20px; border: 1px solid #222; 
+            margin-bottom: 20px; position: relative;
+        }
+        .topic h3 { margin: 0; color: var(--primary); font-size: 1.4rem; }
+        .topic-content { color: #888; margin: 15px 0; border-left: 2px solid #333; padding-left: 10px; }
+
+        /* Comentários */
+        .btn-view { 
+            background: transparent; border: 1px solid #444; color: #888; 
+            padding: 5px 15px; cursor: pointer; font-size: 0.8rem;
+        }
+        .btn-view:hover { border-color: var(--primary); color: var(--primary); }
+
+        .comments-list { display: none; margin-top: 15px; background: #080808; padding: 10px; }
+        .comments-list.active { display: block; }
+        
+        .comment { border-bottom: 1px solid #1a1a1a; padding: 8px 0; font-size: 0.9rem; color: #aaa; }
+        .comment::before { content: "> "; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+<div class="bg-numbers" id="bgNumbers"></div>
+
+<div class="container">
+    <header class="main-header">
+        <h1>HACKER LERDÃO</h1>
+        <p style="color: #444; letter-spacing: 2px;">LOGS ANÔNIMOS // ENTRADA_67</p>
+    </header>
+
+    <div class="box">
+        <input type="text" id="topicTitle" placeholder="[TÍTULO DO PROTOCOLO]">
+        <textarea id="topicContent" rows="3" placeholder="[CONTEÚDO DA MENSAGEM]"></textarea>
+        <button class="btn-main" onclick="addTopic()">EXECUTAR UPLOAD</button>
+    </div>
+
+    <div id="topicsContainer"></div>
+</div>
+
+<script>
+    // Criar números 67 caindo
+    function createMatrixEffect() {
+        const bg = document.getElementById('bgNumbers');
+        for (let i = 0; i < 50; i++) {
+            const num = document.createElement('div');
+            num.className = 'num67';
+            num.innerText = '67';
+            num.style.left = Math.random() * 100 + 'vw';
+            num.style.animationDuration = (Math.random() * 5 + 7) + 's';
+            num.style.animationDelay = Math.random() * 5 + 's';
+            bg.appendChild(num);
+        }
+    }
+    createMatrixEffect();
+
+    let topics = JSON.parse(localStorage.getItem('HackerLerdao_Data')) || [];
+
+    function render() {
+        const container = document.getElementById('topicsContainer');
+        container.innerHTML = '';
+
+        topics.forEach((topic, index) => {
+            const div = document.createElement('div');
+            div.className = 'topic';
+            div.innerHTML = `
+                <h3>${topic.title}</h3>
+                <div class="topic-content">${topic.content}</div>
+                
+                <div style="display:flex; justify-content: space-between; align-items:center;">
+                    <span style="color:#444; font-size: 10px;">DATA_STORAGE_${index}</span>
+                    <button class="btn-view" onclick="toggleComments(${index})">LER COMENTÁRIOS (${topic.comments.length})</button>
+                </div>
+
+                <div id="list-${index}" class="comments-list">
+                    <div id="items-${index}">
+                        ${topic.comments.map(c => `<div class="comment">${c}</div>`).join('')}
+                    </div>
+                    <div style="display:flex; gap:5px; margin-top:10px;">
+                        <input type="text" id="input-${index}" placeholder="Responder..." style="margin:0; padding:5px;">
+                        <button onclick="addComment(${index})" style="background:var(--primary); border:none; padding:5px 10px; cursor:pointer;">+</button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function addTopic() {
+        const t = document.getElementById('topicTitle').value;
+        const c = document.getElementById('topicContent').value;
+        if(!t || !c) return;
+        topics.unshift({ title: t, content: c, comments: [] });
+        saveAndRender();
+        document.getElementById('topicTitle').value = '';
+        document.getElementById('topicContent').value = '';
+    }
+
+    function addComment(index) {
+        const val = document.getElementById(`input-${index}`).value;
+        if(!val) return;
+        topics[index].comments.push(val);
+        saveAndRender();
+        document.getElementById(`list-${index}`).classList.add('active');
+    }
+
+    function toggleComments(index) {
+        document.getElementById(`list-${index}`).classList.toggle('active');
+    }
+
+    function saveAndRender() {
+        localStorage.setItem('HackerLerdao_Data', JSON.stringify(topics));
+        render();
+    }
+
+    render();
+</script>
+
+</body>
+</html>
